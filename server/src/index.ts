@@ -13,7 +13,7 @@ const mount = async (app: Application) => {
     });
     server.applyMiddleware({ app, path: '/api' });
 
-    app.listen(process.env.PORT);
+    app.listen(process.env.SERVER_PORT);
 
     console.log(`[app]: http://localhost:${process.env.SERVER_PORT}`);
 };

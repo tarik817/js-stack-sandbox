@@ -18,6 +18,7 @@ const seed = async () => {
                 price: 10000,
                 numOfGuests: 3,
                 numOfBeds: 1,
+                numOfBaths: 1,
                 rating: 5
             },
             {
@@ -28,6 +29,7 @@ const seed = async () => {
                 price: 15000,
                 numOfGuests: 2,
                 numOfBeds: 1,
+                numOfBaths: 1,
                 rating: 4
             }
         ];
