@@ -1,5 +1,5 @@
 import React from 'react';
-import { server } from '../../lib/api'
+import { server, useQuery } from '../../lib/api'
 import { DeleteListingData, DeleteListingVariables, ListingsData } from './types';
 
 const LISTINGS = `
@@ -31,28 +31,39 @@ interface Props {
 }
 
 export const Listings = (props: Props) => {
-    const fetchListing = async () => {
-        const { data } = await server.fetch<ListingsData>({ query: LISTINGS });
-        console.log(data);
+    const { data, refetch, loading } = useQuery<ListingsData>(LISTINGS);
 
-    };
-
-    const deleteListing = async () => {
-        const { data } = await server.fetch<DeleteListingData, DeleteListingVariables>({
+    const deleteListing = async (id: string) => {
+        await server.fetch<DeleteListingData, DeleteListingVariables>({
             query: DELETE_LISTINGS,
             variables: {
-                // TODO: Start from here.
-                id: "5e823e651a68915ec41d0eb9"
+                id: id
             }
-        })
-        console.log(data);
+        });
+        refetch();
     };
+
+    const listings = data ? data.listings : null;
+
+    const listingsList = listings ? listings.map(listing => {
+        return (
+            <li key={listing.id}>
+                {listing.title}
+                <button onClick={() => deleteListing(listing.id)}> Delete</button>
+            </li>
+        );
+    }) : null;
+
+    if (loading) {
+        return <h3>Loading...</h3>
+    }
 
     return (
         <div>
             <h2>{props.title}</h2>
-            <button onClick={fetchListing}> Query API for listings</button>
-            <button onClick={deleteListing}> Delete API for listings</button>
+            <ul>
+                {listingsList}
+            </ul>
         </div>
     );
 };
