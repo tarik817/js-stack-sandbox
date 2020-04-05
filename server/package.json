@@ -1,5 +1,5 @@
 {
-  "name": "house-exchange-v1",
+  "name": "house-exchange-server",
   "version": "0.1.0",
   "scripts": {
     "start": "nodemon src/index.ts",
