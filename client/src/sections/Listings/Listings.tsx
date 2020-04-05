@@ -1,5 +1,5 @@
 import React from 'react';
-import { server, useQuery } from '../../lib/api'
+import { useMutation, useQuery } from '../../lib/api'
 import { DeleteListingData, DeleteListingVariables, ListingsData } from './types';
 
 const LISTINGS = `
@@ -18,7 +18,7 @@ const LISTINGS = `
     }
 `;
 
-const DELETE_LISTINGS = `
+const DELETE_LISTING = `
     mutation DeleteListings($id: ID!) {
         deleteListing(id: $id) {
             id
@@ -32,14 +32,10 @@ interface Props {
 
 export const Listings = (props: Props) => {
     const { data, refetch, loading, error } = useQuery<ListingsData>(LISTINGS);
+    const [deleteListing, { loading: deleteListingLoading, error: deleteListingError }] = useMutation<DeleteListingData, DeleteListingVariables>(DELETE_LISTING);
 
-    const deleteListing = async (id: string) => {
-        await server.fetch<DeleteListingData, DeleteListingVariables>({
-            query: DELETE_LISTINGS,
-            variables: {
-                id: id
-            }
-        });
+    const handleDeleteListing = async (id: string) => {
+        await deleteListing({id});
         refetch();
     };
 
@@ -49,7 +45,7 @@ export const Listings = (props: Props) => {
         return (
             <li key={listing.id}>
                 {listing.title}
-                <button onClick={() => deleteListing(listing.id)}> Delete</button>
+                <button onClick={() => handleDeleteListing(listing.id)}> Delete</button>
             </li>
         );
     }) : null;
@@ -62,11 +58,21 @@ export const Listings = (props: Props) => {
         return <h3>Something went wrong - please try again later</h3>
     }
 
+    const deleteListingLoadingMessage = deleteListingLoading ? (
+        <h3>Deletion in progress</h3>
+    ) : null;
+
+    const deleteListingErrorMessage = deleteListingError ? (
+        <h3>oops, something went wrong with deletion - please try again later</h3>
+    ) : null;
+
     return (
         <div>
             <h2>{props.title}</h2>
             <ul>
                 {listingsList}
+                {deleteListingLoadingMessage}
+                {deleteListingErrorMessage}
             </ul>
         </div>
     );
